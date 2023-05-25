@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="zh_CN">
+	<head>
+		<meta charset="utf-8">
+		<title>外部引入vue</title>
+		<script src="./vue.js"></script>
+		<style></style>
+	</head>
+	<body>
+		<div id="app">
+			<h1>{{message}}</h1>
+		</div>
+		<script>
+			const Counter={
+				data:function(){
+					return{
+						message:"HelloWord"
+					}
+				}
+			}
+			/* 创建一个Vue对象并把Counter装填进去并挂载到id=app的元素上 */
+			let app = Vue.createApp(Counter).mount('#app');
+			console.log(app)
+		</script>
+	</body>
+</html>
