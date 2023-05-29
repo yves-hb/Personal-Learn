@@ -1,8 +1,31 @@
-<script setup>
+<!-- <script setup>
+/**
+ * import 引入其他组件配置
+ * 语法: import 组件名 form 组件相对路径
+ */
 import HelloWorld from './components/HelloWorld.vue'
+</script> -->
+
+<script>
+export default{
+  data(){
+    return{
+      name:"张三",
+      age:20
+    }
+  }
+}
+
 </script>
 
 <template>
+  <div class="logo">
+    <p>你好: {{name}}</p>
+    <span>{{age}}</span>
+  </div>
+</template>
+
+<!-- <template>
   <div>
     <a href="https://vitejs.dev" target="_blank">
       <img src="/vite.svg" class="logo" alt="Vite logo" />
@@ -11,8 +34,8 @@ import HelloWorld from './components/HelloWorld.vue'
       <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
     </a>
   </div>
-  <HelloWorld msg="Vite + Vue" />
-</template>
+  <HelloWorld msg="HelloWorld" />
+</template> -->
 
 <style scoped>
 .logo {

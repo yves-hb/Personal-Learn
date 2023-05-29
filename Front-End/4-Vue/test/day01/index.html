@@ -4,23 +4,32 @@
 		<meta charset="utf-8">
 		<title>外部引入vue</title>
 		<script src="./vue.js"></script>
-		<style></style>
+		<style>
+			
+		</style>
 	</head>
 	<body>
 		<div id="app">
-			<h1>{{message}}</h1>
+			<span :title="toTitleDate(date)">
+				{{ formatDate(date) }}
+			</span>
 		</div>
 		<script>
 			const Counter={
-				data:function(){
+				data(){
 					return{
-						message:"HelloWord"
+						date:"张三",
+						toTitleDate(date){
+							return date+"你好";
+						},
+						formatDate(date){
+							return date+"再见";
+						}
 					}
-				}
+				},
 			}
 			/* 创建一个Vue对象并把Counter装填进去并挂载到id=app的元素上 */
-			let app = Vue.createApp(Counter).mount('#app');
-			console.log(app)
+			Vue.createApp(Counter).mount('#app');
 		</script>
 	</body>
 </html>

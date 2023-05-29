@@ -211,11 +211,70 @@ yarn create vite my-vue-app --template vue
 
 ​		Mustache 标签将会被替代为对应数据对象上 `msg` property 的值。无论何时，绑定的数据对象上 `msg` property 发生了改变，插值处的内容都会更新。
 
+​		示例：
+
+```html
+<!DOCTYPE html>
+<html lang="zh_CN">
+	<head>
+		<meta charset="utf-8">
+		<title>外部引入vue</title>
+		<script src="./vue.js"></script>
+	</head>
+	<body>
+		<div id="app">
+			<h1>{{message}}</h1>
+		</div>
+		<script>
+			const Counter={
+				data(){
+					return{
+						message:"HelloWord"
+					}
+				}
+			}
+			/* 创建一个Vue对象并把Counter装填进去并挂载到id=app的元素上 */
+			Vue.createApp(Counter).mount('#app');
+		</script>
+	</body>
+</html>
+```
+
+
+
 ​		通过使用 [v-once 指令](https://v2.cn.vuejs.org/v2/api/#v-once)，你也能执行一次性地插值，当数据改变时，插值处的内容不会更新。但请留心这会影响到该节点上的其它数据绑定：
 
 ```html
 <span v-once>这个将不会改变: {{ msg }}</span>
 ```
+
+```html
+<body>
+    <div id="app">
+        <span v-once>{{num}}</span>
+        <button @click="changeNum">功德+1</button>
+    </div>
+    <script>
+        const Counter={
+            data(){
+                return{
+                    num: 1
+                }
+            },
+            methods:{
+                changeNum:function(){
+                    // this指向Vue实例
+                    this.num++;
+                }
+            }
+        }
+        /* 创建一个Vue对象并把Counter装填进去并挂载到id=app的元素上 */
+        Vue.createApp(Counter).mount('#app');
+    </script>
+</body>
+```
+
+
 
 ### 2. 原始HTML
 
@@ -228,3 +287,192 @@ yarn create vite my-vue-app --template vue
 
 ​		这个 `span` 的内容将会被替换成为 property 值 `rawHtml`，直接作为 HTML——会忽略解析 property 值中的数据绑定。注意，你不能使用 `v-html` 来复合局部模板，因为 Vue 不是基于字符串的模板引擎。反之，对于用户界面 (UI)，组件更适合作为可重用和可组合的基本单位。
 
+​		在不添加`v-html` 的情况下：输入的文本并不会直接被转换为html 
+
+![aaa](https://s2.loli.net/2023/05/26/vz9nA76wy8tKJjE.png)![](https://s2.loli.net/2023/05/26/qz4nmZDas1ltkEM.png)
+
+​		如果在父元素上添加`v-html` ,会覆盖其他内容
+
+![image-20230526113705000](https://s2.loli.net/2023/05/26/gd9oveZwiXThuyj.png)![image-20230526113716698](https://s2.loli.net/2023/05/26/ARYoubwIiJTMd5a.png)
+
+​		正确写法：
+
+![image-20230526115149923](https://s2.loli.net/2023/05/26/t2DZa3B4Y9cNFUX.png)![image-20230526115158985](https://s2.loli.net/2023/05/26/wVBAQvM6h9ZoR1d.png)
+
+​		**注意：在网站上动态渲染任意 HTML 是非常危险的，因为这非常容易造成 [XSS 漏洞](https://en.wikipedia.org/wiki/Cross-site_scripting)。请仅在内容安全可信时再使用 `v-html`，并且永远不要使用用户提供的 HTML 内容。**
+
+## （二）Attribute 绑定
+
+​		html 标签的预定义和自定义属性统一称为 `attribute` ，比如：input的type和name都可被成为attribute
+
+```html
+ <input type="checkbox" name="input-name"/>
+```
+
+### 1. 基本用法
+
+​		由上文`v-html`可知，双大括号不能在 HTML attributes 中使用。想要响应式地绑定一个 attribute，应该使用 [`v-bind` 指令](https://cn.vuejs.org/api/built-in-directives.html#v-bind)：
+
+```html
+<body>
+    <div id="app">
+        <img v-bind:src="url" alt="">
+    </div>
+    <script>
+        const Counter={
+            data(){
+                return{ url:"https://s2.loli.net/2023/05/26/t2DZa3B4Y9cNFUX.png" }
+            },
+        }
+        Vue.createApp(Counter).mount('#app');
+    </script>
+</body>
+```
+
+**==注意，`v-bind`可以简写为 ':'，例如 v-bind:src="xxx"等价于 :src="xxx"==** 
+
+### 2. 布尔型 Attribute
+
+​		网页的布尔型 attribute 依据 true / false 值来决定 attribute 是否应该存在于该元素上，但Vue的判断方法存在不同之处。例如：
+
+```html
+<button :disabled="isButtonDisabled">Button</button>
+```
+
+​		当 isButtonDisabled 为真值或一个空字符串 (即 "") 时，元素会包含这个 `disabled` attribute。而当其为其他假值时 attribute 将被忽略。
+
+### 3. 动态绑定多个值
+
+​		通过一个包含多个 attribute 的 JavaScript 对象，就可以通过不带参数的 v-bind，将它们绑定到单个元素上，示例如下：
+
+```html
+<!DOCTYPE html>
+<html lang="zh_CN">
+	<head>
+		<meta charset="utf-8">
+		<title>外部引入vue</title>
+		<script src="./vue.js"></script>
+		<style>
+			#id1{
+				color: red;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="app">
+			<p :=obj>111</p>
+		</div>
+		<script>
+			const Counter={
+				data(){
+					return{
+						obj:{
+							id:"id1",
+							class:"test"
+						},
+					}
+				},
+			}
+			Vue.createApp(Counter).mount('#app');
+		</script>
+	</body>
+</html>
+```
+
+![image-20230529160541751](https://s2.loli.net/2023/05/29/8mLs4WJGgjPdn9r.png)
+
+## （三）使用 JavaScript 表达式
+
+### 1. 普通的JavaScript表达式
+
+​		Vue在所有的数据绑定中都支持完整的 JavaScript 表达式：
+
+```vue
+{{ number + 1 }}
+
+{{ ok ? 'YES' : 'NO' }}
+
+{{ message.split('').reverse().join('') }}
+
+<div :id="`list-${id}`"></div>
+```
+
+​		这些表达式都会被作为 JavaScript ，以当前组件实例为作用域解析执行。
+
+​		在 Vue 模板内，JavaScript 表达式可以被使用在如下场景上：
+
+>   - 在文本插值中 (双大括号) 
+>   - 在任何 Vue 指令 (以 `v-` 开头的特殊 attribute) attribute 的值中
+
+**==注意：每个绑定仅支持【单一表达式】，也就是一段能够被求值的 JavaScript 代码。一个简单的判断方法是是否可以合法地写在 return 后面==** 
+
+​		类似于下面的都是不可以的：
+
+```html
+<!-- 这是一个语句，而非表达式 -->
+{{ var a = 1 }}
+
+<!-- 条件控制也不支持，请使用三元表达式 -->
+{{ if (ok) { return message } }}
+```
+
+### 2. 调用函数
+
+​		可以在绑定的表达式中使用一个组件暴露的方法，也就是说可以在{{ }}、Attribute 绑定中进行函数的调用，示例如下：：
+
+```html
+<time :title="toTitleDate(date)" :datetime="date">
+  {{ formatDate(date) }}
+</time>
+```
+
+​		例如：
+
+```html
+<!DOCTYPE html>
+<html lang="zh_CN">
+	<head>
+		<meta charset="utf-8">
+		<title>外部引入vue</title>
+		<script src="./vue.js"></script>
+		<style></style>
+	</head>
+	<body>
+		<div id="app">
+			<span :title="toTitleDate(date)">
+				{{ formatDate(date) }}
+			</span>
+		</div>
+		<script>
+			const Counter={
+				data(){
+					return{
+						date:"张三",
+						toTitleDate(date){
+							return date+"你好";
+						},
+						formatDate(date){
+							return date+"再见";
+						}
+					}
+				},
+			}
+			Vue.createApp(Counter).mount('#app');
+		</script>
+	</body>
+</html>
+```
+
+![image-20230529165636191](https://s2.loli.net/2023/05/29/42bZVnPRsKEhlYN.png)
+
+### 3. 受限的全局访问
+
+​		模板中的表达式将被沙盒化，仅能够访问到有限的全局对象列表。该列表中会暴露常用的内置全局对象，比如 Math 和 Date。
+
+​		没有显式包含在列表中的全局对象将不能在模板内表达式中访问，例如用户附加在 window 上的属性。然而，你也可以自行在 app.config.globalProperties 上显式地添加它们，供所有的 Vue 表达式使用。
+
+
+
+## （四）指令 Directives
+
+指令是带有 v- 前缀的特殊 attribute。Vue 提供了许多内置指令，包括上面我们所介绍的 v-bind 和 v-html。
