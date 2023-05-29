@@ -475,4 +475,12 @@ yarn create vite my-vue-app --template vue
 
 ## （四）指令 Directives
 
-指令是带有 v- 前缀的特殊 attribute。Vue 提供了许多内置指令，包括上面我们所介绍的 v-bind 和 v-html。
+​		指令是带有 v- 前缀的特殊 attribute。指令用于在表达式的值改变时，将某些行为应用到 DOM 上。Vue 提供了许多内置指令，包括上面我们所介绍的 v-bind 和 v-html。举例：
+
+​		指令 attribute 的期望值为一个 JavaScript 表达式 (除了少数几个例外，即之后要讨论到的 <u>v-for</u>、<u>v-on</u> 和 <u>v-slot</u>)。一个指令的任务是在其表达式的值变化时响应式地更新 DOM。以 v-if 为例：
+
+```html
+<p v-if="seen">Now you see me</p>
+```
+
+这里，`v-if` 指令会基于表达式 `seen` 的值的真假来移除/插入该 `<p>` 元素。
