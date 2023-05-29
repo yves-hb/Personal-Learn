@@ -4,6 +4,10 @@
 # Log file
 *.log
 
+# IDE file
+target/
+.idea/
+
 # BlueJ files
 *.ctxt
 
