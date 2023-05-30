@@ -2,26 +2,20 @@
 export default {
   data() {
     return {
-      isActive: true,
-      error: {}
-    }
-  },
-  computed: {
-    classObject() {
-      return {
-        active: this.isActive && !this.error,
-        'text-danger': this.error
+      styleObj:{
+        color: 'red',
+        fontSize: '30px'
       }
     }
   }
 }
 </script>
 <template>
-  <div class="static" :class="classObject">
+  <div :style="styleObj">
     这是内容
   </div>
 </template>
-<style scoped>
+<style>
 .active{
   font-size: 50px;
 }
