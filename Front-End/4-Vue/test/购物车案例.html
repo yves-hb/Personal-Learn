@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -7,95 +8,126 @@
     <title>购物车案例</title>
     <script src="vue.js"></script>
     <style>
-        img{
-            width: 50px;
-            height: 50px;
+        li {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 10px;
+            border: 1px solid lightblue;
+        }
+
+        li img {
+            width: 100px;
         }
     </style>
 </head>
+
 <body>
-    <div id="box" border="1" bordercolor="red" cellspacing="0" cellpadding="0" align="center">
-        <table >
-            <tr>
-                <td colspan="6">
-                    <input type="checkbox" name="allChose" id="all" /><label for="all">全选\全不选</label>
-                </td>
-            </tr>
-            <tr>
-                <th>选择</th>
-                <th>商品图片</th>
-                <th>商品名\商品价格</th>
-                <th>购买数量</th>
-                <th>操作</th>
-            </tr>
-            <template v-for="({id,img,title,price,num},index) in goodInfos">
-                <tr>
-                    <td>
-                        <input type="checkbox" name="chose" :id=id><label :for=id>选择</label>
-                    </td>
-                    <td><img :src=img></td>
-                    <td>{{title}}<br/>{{price}}</td>
-                    <td>
-                        <button @click="num>0?num--:0">-</button>
-                        <input type="number" v-model="num">
-                        <button @click="add(id,num)">+</button>
-                    </td>
-                    
-                    <td>
-                        <button @click>删除</button>
-                    </td>
-                </tr>
-            </template>
-        </table>
-        
+    <div id="box">
+        <ul>
+            <li>
+                <input type="checkbox" @change="allChecked()" v-model="isAllChecked">
+                <span>点击全选\全不选</span>
+            </li>
+            <li v-for="(good,index) of goodInfos" :key="good.id">
+                <div>
+                    <input type="checkbox" v-model="chackedList" :value="good" @change="oneChecked">
+                </div>
+                <div>
+                    <img :src="good.img">
+                </div>
+                <div>
+                    <div>{{good.title}}</div>
+                    <div>{{good.price}}</div>
+                </div>
+                <div>
+                    <button @click="good.num--" :disabled="good.num===1">-</button>
+                    {{good.num}}
+                    <button @click="good.num++">+</button>
+                </div>
+                <div>
+                    <button @click="del(index,good.id)">删除</button>
+                </div>
+            </li>
+            <li v-if="goodInfos.length===0">kkry</li>
+            <li>
+                总金额：{{sum()}}元
+            </li>
+        </ul>
     </div>
     <script>
-      
+
         let box = {
-            data(){
+            data() {
                 return {
-                    goodInfos:[
+                    isAllChecked:false,
+                    chackedList: [],
+                    goodInfos: [
                         // id，图片地址，商品名，商品总数，商品价格，选购数量
                         {
-                            id:0,
+                            id: 0,
                             img: "https://desk-fd.zol-img.com.cn/t_s960x600c5/g5/M00/02/06/ChMkJlbKyeCIC-SBABiE33zZm4wAALITwH7uzwAGIT3484.jpg",
-                            title:"商品1",
-                            price:10,
-                            num:1
+                            title: "商品1",
+                            price: 10,
+                            num: 1
                         },
                         {
-                            id:1,
+                            id: 1,
                             img: "https://desk-fd.zol-img.com.cn/t_s960x600c5/g5/M00/02/06/ChMkJlbKyeCIC-SBABiE33zZm4wAALITwH7uzwAGIT3484.jpg",
-                            title:"商品2",
-                            price:10,
-                            num:1
+                            title: "商品2",
+                            price: 10,
+                            num: 1
                         },
                         {
-                            id:2,
+                            id: 2,
                             img: "https://desk-fd.zol-img.com.cn/t_s960x600c5/g5/M00/02/06/ChMkJlbKyeCIC-SBABiE33zZm4wAALITwH7uzwAGIT3484.jpg",
-                            title:"商品3",
-                            price:10,
-                            num:1
+                            title: "商品3",
+                            price: 10,
+                            num: 1
                         },
                         {
-                            id:3,
+                            id: 3,
                             img: "https://desk-fd.zol-img.com.cn/t_s960x600c5/g5/M00/02/06/ChMkJlbKyeCIC-SBABiE33zZm4wAALITwH7uzwAGIT3484.jpg",
-                            title:"商品4",
-                            price:10,
-                            num:1
+                            title: "商品4",
+                            price: 10,
+                            num: 1
                         },
                     ]
                 }
             },
-            methods:{
-                add (id,num){
-             console.log(id);
-        }
+            methods: {
+                allChecked(){
+                    this.chackedList = this.isAllChecked?this.goodInfos:[]
+                },
+                oneChecked(){
+                    if(this.goodInfos.length===0){
+                        this.isAllChecked = false;
+                        return;
+                    }
+                    this.isAllChecked = this.chackedList.length===this.goodInfos.length
+                },
+                del(index,id) {
+                    console.log(index+''+id)
+                    this.chackedList=this.chackedList.filter(item=>item.id!==id);
+                    this.goodInfos.splice(index, 1);
+                    this.oneChecked();
+                    
+                },
+                sum(){
+                    // this.totalMoney = 0;
+                    // this.chackedList.forEach(item => {
+                    //     this.totalMoney += item.num*item.price;
+                    // });
+                    // reduce((前一次运算的结果，下一次运算传入参数)=>{运算步骤，初始参数})
+                    
+                    return this.chackedList.reduce((total,item)=>total+item.num*item.price,0);
+                }
             }
 
-            
+
         }
         let app = Vue.createApp(box).mount("#box")
     </script>
 </body>
+
 </html>
