@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>购物车案例</title>
+    <script src="vue.js"></script>
+    <style>
+        img{
+            width: 50px;
+            height: 50px;
+        }
+    </style>
+</head>
+<body>
+    <div id="box" border="1" bordercolor="red" cellspacing="0" cellpadding="0" align="center">
+        <table >
+            <tr>
+                <td colspan="6">
+                    <input type="checkbox" name="allChose" id="all" /><label for="all">全选\全不选</label>
+                </td>
+            </tr>
+            <tr>
+                <th>选择</th>
+                <th>商品图片</th>
+                <th>商品名\商品价格</th>
+                <th>购买数量</th>
+                <th>操作</th>
+            </tr>
+            <template v-for="({id,img,title,price,num},index) in goodInfos">
+                <tr>
+                    <td>
+                        <input type="checkbox" name="chose" :id=id><label :for=id>选择</label>
+                    </td>
+                    <td><img :src=img></td>
+                    <td>{{title}}<br/>{{price}}</td>
+                    <td>
+                        <button @click="num>0?num--:0">-</button>
+                        <input type="number" v-model="num">
+                        <button @click="add(id,num)">+</button>
+                    </td>
+                    
+                    <td>
+                        <button @click>删除</button>
+                    </td>
+                </tr>
+            </template>
+        </table>
+        
+    </div>
+    <script>
+      
+        let box = {
+            data(){
+                return {
+                    goodInfos:[
+                        // id，图片地址，商品名，商品总数，商品价格，选购数量
+                        {
+                            id:0,
+                            img: "https://desk-fd.zol-img.com.cn/t_s960x600c5/g5/M00/02/06/ChMkJlbKyeCIC-SBABiE33zZm4wAALITwH7uzwAGIT3484.jpg",
+                            title:"商品1",
+                            price:10,
+                            num:1
+                        },
+                        {
+                            id:1,
+                            img: "https://desk-fd.zol-img.com.cn/t_s960x600c5/g5/M00/02/06/ChMkJlbKyeCIC-SBABiE33zZm4wAALITwH7uzwAGIT3484.jpg",
+                            title:"商品2",
+                            price:10,
+                            num:1
+                        },
+                        {
+                            id:2,
+                            img: "https://desk-fd.zol-img.com.cn/t_s960x600c5/g5/M00/02/06/ChMkJlbKyeCIC-SBABiE33zZm4wAALITwH7uzwAGIT3484.jpg",
+                            title:"商品3",
+                            price:10,
+                            num:1
+                        },
+                        {
+                            id:3,
+                            img: "https://desk-fd.zol-img.com.cn/t_s960x600c5/g5/M00/02/06/ChMkJlbKyeCIC-SBABiE33zZm4wAALITwH7uzwAGIT3484.jpg",
+                            title:"商品4",
+                            price:10,
+                            num:1
+                        },
+                    ]
+                }
+            },
+            methods:{
+                add (id,num){
+             console.log(id);
+        }
+            }
+
+            
+        }
+        let app = Vue.createApp(box).mount("#box")
+    </script>
+</body>
+</html>
