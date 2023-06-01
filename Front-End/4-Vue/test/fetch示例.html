@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>fetch示例</title>
+    <script src="./vue.js"></script>
+    <style>
+        li {
+            display: flex;
+            overflow: hidden;
+            padding: 10px;
+        }
+
+        li img {
+            width: 100px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="box">
+        <input type="text" v-model="search"><button @click="getWeather()">获取天气信息</button>
+        <ul>
+            <template v-for="(data,index) of dataList" :key="data.id">
+                <!-- <li v-if="data.includes(search)">{{title}}---{{index}}</li> -->
+
+                <li>
+                    <img :src="data.img">
+                    <div>{{data.nm}}</div>
+                </li>
+            </template>
+        </ul>
+    </div>
+    <script>
+        let box = {
+            data() {
+                return {
+                    search: "",
+                    dataList: []
+                }
+            },
+            methods: {
+                getWeather() {
+                    fetch('http://localhost:3000/hot')
+                        .then(res => res.json())
+                        .then(data => this.dataList = data)
+                }
+            }
+        }
+        let app = Vue.createApp(box).mount("#box")
+    </script>
+</body>
+
+</html>

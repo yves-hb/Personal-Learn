@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>组件1</title>
+    <script src="vue.js"></script>
+</head>
+
+<body>
+    <div id="box">
+        <test-a></test-a>
+    </div>
+
+    <script>
+        let box = {
+            data() {
+                return {}
+            }
+        }
+        let app = Vue.createApp(box)
+        // 定义组件 component方法可以多次使用
+        app.component("test-a", {
+            // 输入模板
+            template: `
+                <nav style="color:red">
+                    <p v-for="item of dataList">{{item}}</p>
+                    <test-b></test-b>
+                </nav>
+            `,
+            // 局部组件定义
+            components: {
+                "test-b": {
+                    template: `<div style="background-color: red;">
+        <button>点击</button>
+    </div>`
+                }
+            },
+            // 可以结合vue模板语法创造组件
+            data() {
+                return {
+                    dataList: ["首页", "新闻", "产品"]
+                }
+            }
+        })
+        app.mount('#box');
+    </script>
+</body>
+
+</html>

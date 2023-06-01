@@ -26,12 +26,12 @@
     <div id="box">
         <ul>
             <li>
-                <input type="checkbox" @change="allChecked()" v-model="isAllChecked">
+                <input type="checkbox"  v-model="isAllChecked">
                 <span>点击全选\全不选</span>
             </li>
             <li v-for="(good,index) of goodInfos" :key="good.id">
                 <div>
-                    <input type="checkbox" v-model="chackedList" :value="good" @change="oneChecked">
+                    <input type="checkbox" v-model="chackedList" :value="good" >
                 </div>
                 <div>
                     <img :src="good.img">
@@ -51,7 +51,7 @@
             </li>
             <li v-if="goodInfos.length===0">kkry</li>
             <li>
-                总金额：{{sum()}}元
+                总金额：{{sum}}元
             </li>
         </ul>
     </div>
@@ -60,7 +60,7 @@
         let box = {
             data() {
                 return {
-                    isAllChecked:false,
+                    // isAllChecked:false,
                     chackedList: [],
                     goodInfos: [
                         // id，图片地址，商品名，商品总数，商品价格，选购数量
@@ -69,7 +69,7 @@
                             img: "https://desk-fd.zol-img.com.cn/t_s960x600c5/g5/M00/02/06/ChMkJlbKyeCIC-SBABiE33zZm4wAALITwH7uzwAGIT3484.jpg",
                             title: "商品1",
                             price: 10,
-                            num: 1
+                            num: 2
                         },
                         {
                             id: 1,
@@ -95,33 +95,36 @@
                     ]
                 }
             },
-            methods: {
-                allChecked(){
-                    this.chackedList = this.isAllChecked?this.goodInfos:[]
-                },
-                oneChecked(){
-                    if(this.goodInfos.length===0){
-                        this.isAllChecked = false;
-                        return;
+            computed:{
+                isAllChecked:{
+                    get(){
+                        console.log(111)
+                        if(this.goodInfos.length===0){
+                            return false;
+                        }
+                        return this.chackedList.length===this.goodInfos.length;
+                    },
+                    set(newValue){
+                        this.chackedList = newValue?this.goodInfos:[]
                     }
-                    this.isAllChecked = this.chackedList.length===this.goodInfos.length
                 },
-                del(index,id) {
-                    console.log(index+''+id)
-                    this.chackedList=this.chackedList.filter(item=>item.id!==id);
-                    this.goodInfos.splice(index, 1);
-                    this.oneChecked();
-                    
-                },
+                
                 sum(){
                     // this.totalMoney = 0;
                     // this.chackedList.forEach(item => {
                     //     this.totalMoney += item.num*item.price;
                     // });
-                    // reduce((前一次运算的结果，下一次运算传入参数)=>{运算步骤，初始参数})
-                    
+                    // reduce((前一次运算的结果，下一次运算传入参数)=>{运算步骤，初始参数})              
                     return this.chackedList.reduce((total,item)=>total+item.num*item.price,0);
                 }
+
+            },
+            methods: {
+                del(index,id) {
+                    console.log(index+''+id)
+                    this.chackedList=this.chackedList.filter(item=>item.id!==id);
+                    this.goodInfos.splice(index, 1);                    
+                },
             }
 
 
