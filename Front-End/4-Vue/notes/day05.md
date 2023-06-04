@@ -277,3 +277,5 @@ export default {
 }
 ```
 
+# 四、跨级通信`$provide`与`$inject`
+
