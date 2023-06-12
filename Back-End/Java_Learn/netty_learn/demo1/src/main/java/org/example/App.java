@@ -12,7 +12,10 @@ import java.nio.channels.FileChannel;
 public class App 
 {
     public static void main( String[] args ){
-        aaa();
+//        aaa();
+        System.out.println(ByteBuffer.allocate(10).getClass());
+        System.out.println(ByteBuffer.allocateDirect(10).getClass());
+        ByteBuffer byteBuffer = ByteBuffer.allocateDirect(10);
     }
 
     private static void aa(){
@@ -57,5 +60,7 @@ public class App
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+
     }
 }
