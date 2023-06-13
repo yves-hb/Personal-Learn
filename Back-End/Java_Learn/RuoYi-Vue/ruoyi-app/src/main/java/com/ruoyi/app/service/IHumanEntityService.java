@@ -1,7 +1,8 @@
-package com.ruoyi.system.service;
+package com.ruoyi.app.service;
+
+import com.ruoyi.app.domain.HumanEntity;
 
 import java.util.List;
-import com.ruoyi.system.domain.HumanEntity;
 
 /**
  * 人员基本信息Service接口
@@ -58,4 +59,14 @@ public interface IHumanEntityService
      * @return 结果
      */
     public int deleteHumanEntityById(Long id);
+
+    /**
+     * 导入用户数据
+     *
+     * @param humanEntities 用户数据列表
+     * @param isUpdateSupport 是否更新支持，如果已存在，则进行更新数据
+     * @param operName 操作用户
+     * @return 结果
+     */
+    String importHumanData(List<HumanEntity> humanEntities, boolean isUpdateSupport, String operName);
 }

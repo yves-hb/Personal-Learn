@@ -1,7 +1,7 @@
-package com.ruoyi.system.mapper;
+package com.ruoyi.app.mapper;
 
+import com.ruoyi.app.domain.HumanEntity;
 import java.util.List;
-import com.ruoyi.system.domain.HumanEntity;
 
 /**
  * 人员基本信息Mapper接口
@@ -9,7 +9,7 @@ import com.ruoyi.system.domain.HumanEntity;
  * @author ruoyi
  * @date 2023-06-09
  */
-public interface HumanEntityMapper 
+public interface HumanEntityMapper
 {
     /**
      * 查询人员基本信息

@@ -2,6 +2,10 @@ package com.ruoyi.web.controller.system;
 
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
+
+import com.ruoyi.app.service.IHumanEntityService;
+import com.ruoyi.common.core.domain.model.LoginUser;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,10 +20,10 @@ import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.enums.BusinessType;
-import com.ruoyi.system.domain.HumanEntity;
-import com.ruoyi.system.service.IHumanEntityService;
+import com.ruoyi.app.domain.HumanEntity;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.common.core.page.TableDataInfo;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * 人员基本信息Controller
@@ -39,6 +43,7 @@ public class HumanEntityController extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('system:entity:list')")
     @GetMapping("/list")
+    @ApiOperation("获取用户列表")
     public TableDataInfo list(HumanEntity humanEntity)
     {
         startPage();
@@ -58,6 +63,23 @@ public class HumanEntityController extends BaseController
         ExcelUtil<HumanEntity> util = new ExcelUtil<HumanEntity>(HumanEntity.class);
         util.exportExcel(response, list, "人员基本信息数据");
     }
+
+    /**
+     * 批量导入用户信息
+     */
+    @PreAuthorize("@ss.hasPermi('system:entity:import')")
+    @Log(title = "人员基本信息批量导入",businessType = BusinessType.IMPORT)
+    @PostMapping("/import")
+    public AjaxResult importHumanData(MultipartFile file,boolean updateSupport)throws Exception
+    {
+        ExcelUtil<HumanEntity> excelUtil = new ExcelUtil<>(HumanEntity.class);
+        List<HumanEntity> humanEntities = excelUtil.importExcel(file.getInputStream());
+        LoginUser loginUser = getLoginUser();
+        String operName = loginUser.getUsername();
+        String message = humanEntityService.importHumanData(humanEntities, updateSupport, operName);
+        return AjaxResult.success(message);
+    }
+
 
     /**
      * 获取人员基本信息详细信息
