@@ -433,8 +433,23 @@ Bytebuffer buf = ByteBuffer.allocateDirect(10);
 
 System.out.println(ByteBuffer.allocate(10).getClass());//class java.nio.HeapByteBuffer
 System.out.println(ByteBuffer.allocateDirect(10).getClass());// class java.nio.DirectByteBuffer
-
 ```
+
+**`HeapByteBuffer`和`DirectByteBuffer`的区别**
+
+Nio中Buffer类继承图如下，其中最主要的类是HeapByteBuffer和DirectByteBuffer
+
+![image](img/167cac38a23be8c5tplv-t2oaga2asx-zoom-in-crop-mark4536000.webp)
+
+HeapByteBuffer（堆内内存）：顾名思义，是写在jvm堆上面的一个buffer，底层本质是一个数组； 由于内容维护在jvm里，所以把内容写进buffer里速度会快些；并且Java堆内存的管理，是由gc去管理的，更简洁；
+
+
+
+DirectByteBuffer（堆外内存）：底层的数据其实是维护在内核缓存中，而不是jvm里，DirectByteBuffer里维护了一个引用address指向了数据，从而操作数据； 由于DirectByteBuffer分配与native memory中，不在heap区，所以不会受到heap区的gc影响，但分配和释放需要更多的成本；
+
+参考:
+
+[Java零拷贝四步曲——HeapByteBuffer与DirectByteBuffer](https://juejin.cn/post/6844903744115572749)
 
 
 
