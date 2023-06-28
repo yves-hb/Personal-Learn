@@ -1,6 +1,8 @@
-# SaToken基础
+# 一、SaToken基础
 
-## SaToken使用场景
+## （一）SaToken简介
+
+### 1. SaToken使用场景
 
 Sa-Token 目前主要五大功能模块：登录认证、权限认证、单点登录、OAuth2.0、微服务鉴权。
 
@@ -38,7 +40,7 @@ Sa-Token 目前主要五大功能模块：登录认证、权限认证、单点�
 
 ![sa-token-js](https://color-test.oss-cn-qingdao.aliyuncs.com/sa-token/x/sa-token-js4.png)
 
-## 在springboot中的基础配置
+### 2. 在springboot中的基础配置
 
 1. 添加依赖
 
@@ -78,7 +80,106 @@ sa-token:
     is-log: true
 ```
 
-## 登录认证
+3. 创建测试的Controller
 
+```java
+@RestController
+@RequestMapping("/user/")
+public class UserController {
 
+    // 测试登录，浏览器访问： http://localhost:8081/user/doLogin?username=zhang&password=123456
+    @RequestMapping("doLogin")
+    public String doLogin(String username, String password) {
+        // 此处仅作模拟示例，真实项目需要从数据库中查询数据进行比对 
+        if("zhang".equals(username) && "123456".equals(password)) {
+            StpUtil.login(10001);
+            return "登录成功";
+        }
+        return "登录失败";
+    }
 
+    // 查询登录状态，浏览器访问： http://localhost:8081/user/isLogin
+    @RequestMapping("isLogin")
+    public String isLogin() {
+        return "当前会话是否登录：" + StpUtil.isLogin();
+    }   
+}
+```
+
+4. 运行效果
+
+启动代码，从浏览器依次访问上述测试接口：
+
+![运行结果](./img/test-do-login.png)
+
+![运行结果](./img/test-is-login.png)
+
+### 3. 登录认证
+
+#### （1）设计思路
+
+对于一些登录之后才能访问的接口（例如：查询我的账号资料），我们通常的做法是增加一层接口校验：
+
+- 如果校验通过，则：正常返回数据。
+- 如果校验未通过，则：抛出异常，告知其需要先进行登录。
+
+那么，判断会话是否登录的依据是什么？我们先来简单分析一下登录访问流程：
+
+1. 用户提交 `name` + `password` 参数，调用登录接口。
+2. 登录成功，返回这个用户的 Token 会话凭证。
+3. 用户后续的每次请求，都携带上这个 Token。
+4. 服务器根据 Token 判断此会话是否登录成功。
+
+所谓登录认证，指的就是服务器校验账号密码，为用户颁发 Token 会话凭证的过程，这个 Token 也是我们后续判断会话是否登录的关键所在。
+
+![img](./img/g3--login-auth.gif)
+
+#### （2）登录流程源码解析
+
+1. SaToken登录时调用函数：
+
+```java
+// 会话登录：参数填写要登录的账号id，建议的数据类型：long | int | String， 不可以传入复杂类型，如：User、Admin 等等
+StpUtil.login(Object id);
+```
+
+2. 进入`login`方法的源码查看：
+
+```java
+public static void login(Object id) {
+    stpLogic.login(id);
+}
+public void login(Object id) {
+    this.login(id, new SaLoginModel());
+}
+public void login(Object id, SaLoginModel loginModel) {
+    String token = this.createLoginSession(id, loginModel);
+    this.setTokenValue(token, loginModel);
+}
+```
+
+3. 首先会去创建会话session：
+
+```java
+public String createLoginSession(Object id, SaLoginModel loginModel) {
+    //	检验账号id是否为空
+    SaTokenException.throwByNull(id, "账号id不能为空", 11002);
+    //	获取SaToken配置
+    SaTokenConfig config = this.getConfig();
+    //	创建SaLoginModel实例 , 赋予其timeout和isWriteHeader属性
+    loginModel.build(config);
+    //	判断是否为多端登录\是否能共享Token来生成一个Token
+    String tokenValue = this.distUsableToken(id, loginModel);
+    
+    SaSession session = this.getSessionByLoginId(id, true);
+    session.updateMinTimeout(loginModel.getTimeout());
+    session.addTokenSign(tokenValue, loginModel.getDeviceOrDefault());
+    this.saveTokenToIdMapping(tokenValue, id, loginModel.getTimeout());
+    this.setLastActivityToNow(tokenValue);
+    SaTokenEventCenter.doLogin(this.loginType, id, tokenValue, loginModel);
+    if (config.getMaxLoginCount() != -1) {
+        this.logoutByMaxLoginCount(id, session, (String)null, config.getMaxLoginCount());
+    }
+    return tokenValue;
+}
+```
