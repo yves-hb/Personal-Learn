@@ -30,8 +30,8 @@ public class Demo01Application {
             throw new RuntimeException(e);
         }*/
 
-        /*System.out.println(context.getEnvironment().getProperty("java_home"));
-        System.out.println(context.getEnvironment().getProperty("server.port"));*/
+        System.out.println(context.getEnvironment().getProperty("java_home"));
+        System.out.println(context.getEnvironment().getProperty("server.port"));
         context.publishEvent(new Date());
     }
 }
