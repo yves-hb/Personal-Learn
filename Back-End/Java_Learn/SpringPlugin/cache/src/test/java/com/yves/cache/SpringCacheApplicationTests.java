@@ -3,7 +3,7 @@ package com.yves.cache;
 import com.yves.cache.entity.User;
 import com.yves.cache.service.UserService;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,7 +20,7 @@ import javax.annotation.Resource;
 @RunWith(SpringRunner.class)
 public class SpringCacheApplicationTests {
 
-    @Autowired
+    @Autowired(required = false)
     private UserService noCacheUserService;
 
     @Test

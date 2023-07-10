@@ -12,11 +12,12 @@ import org.springframework.stereotype.Service;
  * TODO
  */
 @Slf4j
-@Service
+@Service(value = "noCacheUserServiceImpl")
 public class NoCacheUserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
 
     @Override
     public User findById(Integer userId){
+        log.info("没有使用缓存获取用户信息");
         return this.getById(userId);
     }
 
@@ -29,6 +30,11 @@ public class NoCacheUserServiceImpl extends ServiceImpl<UserMapper, User> implem
     @Override
     public void deleteUser(Integer userId){
         this.removeById(userId);
+    }
+
+    @Override
+    public User updateUser(User user) {
+        return null;
     }
 
 }

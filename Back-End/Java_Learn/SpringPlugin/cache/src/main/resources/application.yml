@@ -14,5 +14,5 @@ spring:
 mybatis-plus:
   typeAliasesPackage: com.yves.cache.entity
   configuration:
-    map-underscore-to-camel-case: true
-    lo
+    map-underscore-to-camel-case: true                      # 下划线驼峰命名转换
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl   # 设置日志
