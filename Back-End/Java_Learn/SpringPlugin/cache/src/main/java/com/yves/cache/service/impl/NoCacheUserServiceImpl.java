@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
  * TODO
  */
 @Slf4j
-@Service(value = "noCacheUserServiceImpl")
+@Service("noCacheUserServiceImpl")
 public class NoCacheUserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
 
     @Override

@@ -6,7 +6,6 @@ import com.yves.cache.entity.User;
 import com.yves.cache.mapper.UserMapper;
 import com.yves.cache.service.UserService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -17,7 +16,7 @@ import org.springframework.stereotype.Service;
  * @description TODO
  */
 @Slf4j
-@Service(value = "springCacheUserServiceImpl")
+@Service("springCacheUserServiceImpl")
 public class SpringCacheUserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
 
     /**

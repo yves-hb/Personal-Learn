@@ -7,9 +7,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.concurrent.ConcurrentMapCache;
+import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.annotation.Resource;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author HB on 2023/7/6
@@ -20,8 +25,11 @@ import javax.annotation.Resource;
 @RunWith(SpringRunner.class)
 public class SpringCacheApplicationTests {
 
-    @Autowired(required = false)
+    @Resource(name = "noCacheUserServiceImpl")
     private UserService noCacheUserService;
+
+    @Resource
+    private CacheManager cacheManager;
 
     @Test
     public void addUser(){
@@ -35,5 +43,15 @@ public class SpringCacheApplicationTests {
     public void findUserById(){
         User byId = noCacheUserService.findById(1);
         log.info("User found: {}", byId);
+    }
+
+    @Test
+    public void findUser(){
+        Cache user = cacheManager.getCache("user");
+        Object nativeCache = user.getNativeCache();
+        System.out.println(nativeCache.getClass());
+        ConcurrentHashMap<Integer,User> concurrentMap =(ConcurrentHashMap<Integer,User>) nativeCache;
+        User user1 = concurrentMap.get(1);
+        log.info("User found: {}", user1);
     }
 }
