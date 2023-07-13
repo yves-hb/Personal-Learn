@@ -105,7 +105,7 @@ public class SpringCacheApplication {
 
 ### (2) @Cacheable
 
-在需要缓存的方法上，添加@Cacheable注解，表示该方法需要被缓存
+注解表示这个方法有了缓存的功能，方法的返回值会被缓存下来，下一次调用该方法前，会去检查是否缓存中已经有值，如果有就直接返回，不调用方法。如果没有，就调用方法，然后把结果缓存起来。这个注解**一般用在查询方法上**。
 
 ```java
 // 在UserService或 UserServiceImpl的方法上添加注解
@@ -117,9 +117,43 @@ public User findById(Integer userId);
 
 ### (3) @CachePut
 
+加了`@CachePut`注解的方法，会把方法的返回值put到缓存里面缓存起来，供其它地方使用。它**通常用在新增或更新方法上**。
+
+### (4)@CacheEvict
+
+使用了`CacheEvict`注解的方法，会清空指定缓存。**一般用在更新或者删除的方法上**。
+
+### (5)@Caching
+
+Java注解的机制决定了，一个方法上只能有一个相同的注解生效。那有时候可能一个方法会操作多个缓存（这个在删除缓存操作中比较常见，在添加操作中不太常见）。
+
+Spring Cache当然也考虑到了这种情况，`@Caching`注解就是用来解决这类情况的，源码如下:
+
+```java
+public @interface Caching {
+    Cacheable[] cacheable() default {};
+    CachePut[] put() default {};
+    CacheEvict[] evict() default {};
+}
+```
+
+### (6)@CacheConfig
+
+前面提到的四个注解，都是Spring Cache常用的注解。每个注解都有很多可以配置的属性，这个我们在下一节再详细解释。但这几个注解通常都是作用在方法上的，而有些配置可能又是一个类通用的，这种情况就可以使用`@CacheConfig`了，它是一个类级别的注解，可以在类级别上配置cacheNames、keyGenerator、cacheManager、cacheResolver等。
+
+### (7) 注解参数解读
+
+| 参数名               | 参数方法                                                     |
+| -------------------- | ------------------------------------------------------------ |
+| `value`/`cacheNames` | 缓存容器名 , 可同时定义多个 如 value={"user"} , 将方法结果保存在名为"user"的缓存容器中 |
+| `key`                | 可以通过 key 属性来指定缓存数据所使用的的 key，默认使用的是方法调用传过来的参数作为 key。**`最终缓存中存储的内容格式为：Entry<key,value> 形式。`**<br />  如果请求没有参数：`key=new SimpleKey()；`<br />  如果请求有一个参数：`key=参数的值` <br />  如果请求有多个参数：`key=newSimpleKey(params)；`<br />key值的编写，可以使用 ***SpEL*** 表达式的方式来编写；除此之外，我们同样可以使用 `keyGenerator` 生成器的方式来指定 key，我们只需要编写一个 keyGenerator ，将该生成器注册到 IOC 容器即可。 |
+| `keyGenerator `      | key 的生成器。如果觉得通过参数的方式来指定比较麻烦，我们可以自己指定 key 的生成器的组件 id。key/keyGenerator属性：二选一使用。我们可以通过自定义配置类方式，将 keyGenerator 注册到 IOC 容器来使用。<br />参考代码: [MyCacheConfig](..\cache\src\main\java\com\yves\cache\config\MyCacheConfig.java) |
+|                      |                                                              |
+
 
 
 # 参考资料
 
 [09 Cacheable用法_哔哩哔哩_bilibili](https://www.bilibili.com/video/BV1ex411d7ky/?p=9&spm_id_from=pageDriver&vd_source=73148abc9bb63ed9ac03e82f65b68312)
 
+[Spring Cache，从入门到真香 - 知乎 (zhihu.com)](https://zhuanlan.zhihu.com/p/266804094)
