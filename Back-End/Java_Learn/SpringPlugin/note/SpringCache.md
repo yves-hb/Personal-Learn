@@ -147,8 +147,32 @@ public @interface Caching {
 | -------------------- | ------------------------------------------------------------ |
 | `value`/`cacheNames` | 缓存容器名 , 可同时定义多个 如 value={"user"} , 将方法结果保存在名为"user"的缓存容器中 |
 | `key`                | 可以通过 key 属性来指定缓存数据所使用的的 key，默认使用的是方法调用传过来的参数作为 key。**`最终缓存中存储的内容格式为：Entry<key,value> 形式。`**<br />  如果请求没有参数：`key=new SimpleKey()；`<br />  如果请求有一个参数：`key=参数的值` <br />  如果请求有多个参数：`key=newSimpleKey(params)；`<br />key值的编写，可以使用 ***SpEL*** 表达式的方式来编写；除此之外，我们同样可以使用 `keyGenerator` 生成器的方式来指定 key，我们只需要编写一个 keyGenerator ，将该生成器注册到 IOC 容器即可。 |
-| `keyGenerator `      | key 的生成器。如果觉得通过参数的方式来指定比较麻烦，我们可以自己指定 key 的生成器的组件 id。key/keyGenerator属性：二选一使用。我们可以通过自定义配置类方式，将 keyGenerator 注册到 IOC 容器来使用。<br />参考代码: [MyCacheConfig](..\cache\src\main\java\com\yves\cache\config\MyCacheConfig.java) |
-|                      |                                                              |
+| `keyGenerator `      | **`key 的生成器。`**如果觉得通过参数的方式来指定比较麻烦，我们可以自己指定 key 的生成器的组件 id。key/keyGenerator属性：二选一使用。我们可以通过自定义配置类方式，将 keyGenerator 注册到 IOC 容器来使用。<br />参考代码: [MyCacheConfig](..\cache\src\main\java\com\yves\cache\config\MyCacheConfig.java) |
+| `cacheManager `      | **`该属性，用来指定缓存管理器。`**针对不同的缓存技术，需要实现不同的 cacheManager，Spring 也为我们定义了如下的一些 cacheManger 实现:<br />`1. SimpleCacheManager`:使用简单的Collection来存储缓存，主要用于测试<br />`2.ConcurrentMapCacheManager`:使用ConcurrentMap作为缓存技术（默认）<br />`3.NoOpCacheManager`:测试用<br />`4.EhCacheCacheManager`:使用EhCache作为缓存技术，以前在hibernate的时候经常用<br />`5.GuavaCacheManager`:使用google guava的GuavaCache作为缓存技术<br />`6.HazelcastCacheManager`:使用Hazelcast作为缓存技术<br />`7.JCacheCacheManager`:使用JCache标准的实现作为缓存技术，如Apache Commons JCS<br />`8.RedisCacheManager`:使用Redis作为缓存技术 |
+| `cacheResolver `     | **`该属性，用来指定缓存管理器。`**使用配置同 cacheManager 类似，可自行百度。（cacheManager指定管理器/cacheResolver指定解析器 它俩也是二选一使用） |
+| `condition`          | 条件判断属性，用来指定符合指定的条件下才可以缓存。也可以通过 ***SpEL*** 表达式进行设置。这个配置规则和上面表格中的配置规则是相同的。 |
+| `unless`             | unless属性，意为"除非"的意思。即只有 unless 指定的条件为 true 时，方法的返回值才不会被缓存。**`可以在获取到结果后进行判断。`** |
+| `sync`               | 该属性用来指定**`是否使用异步模式`**，该属性默认值为 false，默认为同步模式。**`异步模式指定 sync = true 即可，异步模式下 unless 属性不可用。`** |
+
+### (8)SpEL在缓存中的使用
+
+| 名字          | 位置                | 描述                                                         | 示例                 |
+| ------------- | ------------------- | ------------------------------------------------------------ | -------------------- |
+| methodName    | root  object        | 当前被调用的方法名                                           | #root.method.name    |
+| method        | root  object        | 当前被调用的方法                                             | #root.methodName     |
+| target        | root  object        | 当前被调用的目标对象                                         | #root.target         |
+| targetClass   | root  object        | 当前被调用的目标对象类                                       | #root.targetClass    |
+| args          | root  object        | 当前被调用的方法的参数列表                                   | #root.args[0]        |
+| caches        | root  object        | 当前方法调用使用的缓存列表(如@Cacheable(value={"cache1  ","cache2")),则有两个cache | #root.caches[0].name |
+| argument name | evaluation  context | 方法参数的名字.可以直接#参数名,也可以使用#p0或#a0的形式,0代表参数的索引; | #id、#p0、#a0        |
+| result        | evaluation  context | 方法执行后的返回值(仅当方法执行之后的判断有效,如unless'、'cache  put'的表达式'cacheevict'的表达式beforeInvocation=false) | #result              |
+
+使用示例:
+
+```java
+@Cacheable(value = "user",key = "#root.method.name")
+User getUser(Integer id);
+```
 
 
 
