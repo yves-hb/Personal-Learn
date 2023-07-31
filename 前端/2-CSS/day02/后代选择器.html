@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta lang="zh_CN">
+		<meta charset="utf-8">
+		<title>后代选择器</title>
+		<style>
+			.aa span{
+				color: aqua;
+			}
+			.bb>span{
+				color: blue;
+			}
+		</style>
+	</head>
+	<body>
+		<span>标签</span>
+		<div class="aa">
+			<p>选择器用空格隔开表示 所有属于父标签的下级标签给全部选中</p>
+			<span>在div>span的文字 , 后代选择器</span>
+			<p>
+				<span>div>p>span下的文字</span>
+			</p>
+		</div>
+		<div class="bb">
+			<p>选择器用 > 隔开 表示属于父标签的一级子标签被选中</p>
+			<span>在div>span下的文字</span>
+			<p>
+				<span>
+					在div>p>span下的文字
+				</span>
+			</p>
+		</div>
+	</body>
+</html>

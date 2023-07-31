@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh_CN">
+	<head>
+		<meta charset="utf-8">
+		<title>抖音窗口</title>
+		<style>
+			*{
+				margin: 0;
+				padding: 0;
+				list-style: none;
+			}
+			.box{
+				width: 440px;
+				height: 220px;
+				background-color: aqua;
+				
+				
+			}
+			.box ul{
+				width: 100%;
+				height: 100%;
+				display: flex;
+				flex-flow: row wrap;
+				justify-content: space-between;
+				align-content: space-between;
+			}
+			.box li{
+				margin-bottom: 10px;
+				width: 200px;
+				height: 100px;
+				background-color: #fff;
+			}
+			.box>ul>li:nth-child(n+3){
+				margin-bottom: 0px;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="box">
+			<ul>
+				<li>1</li>
+				<li>2</li>
+				<li>3</li>
+				<li>4</li>
+			</ul>
+		</div>
+	</body>
+</html>
