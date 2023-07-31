@@ -1,6 +1,7 @@
 server:
   port: 8081
 spring:
+
 #  redis:
 #    host: 47.109.76.117
 #    database: 0
